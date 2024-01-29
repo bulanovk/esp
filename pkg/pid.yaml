@@ -1,0 +1,99 @@
+#Custom
+number:
+ - platform: template
+   name: pid_climate PID Max integral
+   unit_of_measurement: "%"
+   min_value: 0.0
+   max_value: 100.0
+   step: 1.0
+   mode: box
+   set_action:
+     - lambda: id(pid_climate).set_max_integral(x/100);
+   optimistic: true
+   restore_value: true
+   initial_value: 0.0
+   id: pid_max_int
+ - platform: template
+   name: pid_climate PID Min integral
+   unit_of_measurement: "%"
+   min_value: 0.0
+   max_value: 100.0
+   step: 1.0
+   mode: box
+   set_action:
+     - lambda: id(pid_climate).set_min_integral(x/100);
+   optimistic: true
+   restore_value: true
+   initial_value: 0.0
+   id: pid_min_int
+#Buttons
+button:
+ - platform: template
+   name: "PID Climate Autotune"
+   on_press:
+     - climate.pid.autotune: pid_climate
+
+sensor:
+ #-------------------- PID Start
+ - platform: pid
+   name: "PID Climate Result"
+   type: RESULT
+   climate_id: pid_climate
+ - platform: pid
+   name: "PID Climate PROPORTIONAL"
+   type: PROPORTIONAL
+   climate_id: pid_climate
+ - platform: pid
+   name: "PID Climate INTEGRAL"
+   type: INTEGRAL
+   climate_id: pid_climate
+ - platform: pid
+   name: "PID Climate DERIVATIVE"
+   type: DERIVATIVE
+   climate_id: pid_climate
+ - platform: pid
+   name: "PID Climate HEAT"
+   type: HEAT
+   climate_id: pid_climate
+#-------------------- PID End
+
+#Climtae
+climate:
+ - platform: pid
+   id: pid_climate
+   name: "PID Climate Controller"
+   visual:
+     min_temperature: 10
+     max_temperature: 30
+     temperature_step: 0.1
+   sensor: ATC_3DB456_temp
+   default_target_temperature: 21°C
+   heat_output: sw1_pwm
+   control_parameters:
+     kp: 0.9
+     ki: 0.00031
+     kd: 700
+     output_averaging_samples: 2      # smooth the output over 5 samples
+     derivative_averaging_samples: 360  # smooth the derivative value over 10 samples
+   deadband_parameters:
+     threshold_high: 0.1°C       # deadband within +/-0.5°C of target_temperature
+     threshold_low: -0.1°C
+   on_state:
+     - lambda: |-
+         if (id(pid_climate).mode == CLIMATE_MODE_OFF) {
+           id(pid_climate).set_max_integral(id(pid_climate).get_integral_term());
+           id(pid_climate).set_min_integral(id(pid_climate).get_integral_term());
+         }
+         else {
+           id(pid_climate).set_max_integral(id(pid_max_int).state / 100);
+           id(pid_climate).set_min_integral(id(pid_min_int).state / 100);
+         }
+# Outputs
+output:
+ - platform: slow_pwm
+   id: sw1_pwm
+   period: 15min
+   turn_off_action:
+     - switch.turn_off: s1
+   turn_on_action:
+     - switch.turn_on: s1

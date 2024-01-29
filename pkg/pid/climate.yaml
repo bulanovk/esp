@@ -1,0 +1,61 @@
+#Buttons
+button:
+ - platform: template
+   name: "PID Climate Autotune ${pid_id}"
+   on_press:
+     - climate.pid.autotune: ${pid_id}
+packages:
+  pid.${pid_id}.input: !include {file: pid_input.yaml, vars: { pid_id: "${pid_id}" } }
+  pid.${pid_id}.sensors: !include {file: sensors.yaml, vars: { pid_id: "${pid_id}" } }  
+
+sensor:
+  - platform: template
+    id: ${pid_id}_temp
+    unit_of_measurement: "°C"
+    device_class: "temperature"
+    state_class: "measurement"
+    accuracy_decimals: 2
+    lambda: |-
+      return id(modbus_ATC_${short_mac}).state; 
+    update_interval: 1s
+
+#Climtae
+climate:
+ - platform: pid
+   id: ${pid_id}
+   name: "Climate Controller - ${pid_id}"
+   visual:
+     min_temperature: 10
+     max_temperature: 30
+     temperature_step: 0.1
+   sensor: ${pid_id}_temp
+   default_target_temperature: 21°C
+   heat_output: pwm_${zone_name}
+   control_parameters:
+     kp: 0.9
+     ki: 0.00031
+     kd: 700
+     output_averaging_samples: 2      # smooth the output over 5 samples
+     derivative_averaging_samples: 360  # smooth the derivative value over 10 samples
+   deadband_parameters:
+     threshold_high: 0.1°C       # deadband within +/-0.5°C of target_temperature
+     threshold_low: -0.1°C
+   on_state:
+     - lambda: |-
+         if (id(${pid_id}).mode == CLIMATE_MODE_OFF) {
+           id(${pid_id}).set_max_integral(id(${pid_id}).get_integral_term());
+           id(${pid_id}).set_min_integral(id(${pid_id}).get_integral_term());
+         }
+         else {
+           id(${pid_id}).set_max_integral(id(pid_max_int_${pid_id}).state / 100);
+           id(${pid_id}).set_min_integral(id(pid_min_int_${pid_id}).state / 100);
+         }
+# Outputs
+output:
+ - platform: slow_pwm
+   id: pwm_${zone_name}
+   period: 15min
+   turn_off_action:
+     - switch.turn_off: valve_zone${zone_name}_switch
+   turn_on_action:
+     - switch.turn_on: valve_zone${zone_name}_switch

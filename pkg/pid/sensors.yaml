@@ -1,0 +1,23 @@
+sensor:
+ #-------------------- PID Start
+ - platform: pid
+   name: "${pid_id}: PID Climate Result"
+   type: RESULT
+   climate_id: ${pid_id}
+ - platform: pid
+   name: "${pid_id}: PID Climate PROPORTIONAL"
+   type: PROPORTIONAL
+   climate_id: ${pid_id}
+ - platform: pid
+   name: "${pid_id}: PID Climate INTEGRAL"
+   type: INTEGRAL
+   climate_id: ${pid_id}
+ - platform: pid
+   name: "${pid_id}: PID Climate DERIVATIVE"
+   type: DERIVATIVE
+   climate_id: ${pid_id}
+ - platform: pid
+   name: "${pid_id}: PID Climate HEAT"
+   type: HEAT
+   climate_id: ${pid_id}
+#-------------------- PID End

@@ -1,0 +1,31 @@
+platform: template
+id: valve${zone_name}_state
+name: valve${zone_name}_state
+lambda: |-
+  return id(valve${zone_name}_switch).state;
+filters:
+  - delayed_on:
+      seconds: 120
+on_press:
+  then:
+    - if:
+        condition:
+          - and:
+              - switch.is_off: boiler_switch
+              - switch.is_on: valve${zone_name}_switch
+        then:
+          - switch.turn_on: boiler_switch
+on_release:
+  then:
+    - if:
+        condition:
+          - and:
+              - switch.is_on: boiler_switch
+              - switch.is_off: valve1_switch
+              - switch.is_off: valve2_switch
+              - switch.is_off: valve3_switch
+              - switch.is_off: valve4_switch
+              - switch.is_off: valve5_switch
+              - switch.is_off: valve6_switch
+        then:
+          - switch.turn_off: boiler_switch

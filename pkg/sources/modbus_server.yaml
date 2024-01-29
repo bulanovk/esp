@@ -1,0 +1,5 @@
+external_components:
+  - source: github://epiclabs-io/esphome-modbus-server@master
+    refresh: 60s
+    components:
+      - modbus_server

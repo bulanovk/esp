@@ -1,0 +1,73 @@
+#Generic Block
+esphome:
+  name: modbus-master
+  friendly_name: modbus-master
+
+packages:
+  metric: !include pkg/metric.yaml
+  basic: !include pkg/basic.yaml
+  pid.kitchen: !include {file: pkg/pid/climate.yaml, vars: { pid_id: pid_kitchen, zone_name: 1, short_mac: 3DB456} }  
+  pid.children: !include {file: pkg/pid/climate.yaml, vars: { pid_id: pid_children, zone_name: 2, short_mac: 4BF595} }  
+  pid.bedroom: !include {file: pkg/pid/climate.yaml, vars: { pid_id: pid_bedroom, zone_name: 3, short_mac: BB950A} }    
+  pid.guest: !include {file: pkg/pid/climate.yaml, vars: { pid_id: pid_guest, zone_name: 4, short_mac: 73978C} }  
+  pid.toilet: !include {file: pkg/pid/climate.yaml, vars: { pid_id: pid_toilet, zone_name: 5, short_mac: F61941} }  
+  pid.hall: !include {file: pkg/pid/climate.yaml, vars: { pid_id: pid_hall, zone_name: 6, short_mac: B75595} }  
+
+api:
+  encryption:
+    key: "mY2PuxeI7kVcAZIITrg+sOE6UOCP1TYNmWBdlmjxP94="
+
+web_server:
+  port: 80
+
+binary_sensor:
+  # In case the API connection is lost, the controller will change
+  # to automatic mode.
+  - platform: template
+    id: sensor_api_connected
+    name: Autonomous Mode
+    lambda: return !global_api_server->is_connected();
+    filters:
+      - delayed_off: 60s
+
+sensor:
+  ### ModBUS
+  - <<: !include { file: tpl/modbus/client/sensor.yaml, vars: {addr: 0x064, zone_name: 1, short_mac: 3DB456 } }  
+  - <<: !include { file: tpl/modbus/client/sensor.yaml, vars: {addr: 0x065, zone_name: 2, short_mac: 4BF595 } }  
+  - <<: !include { file: tpl/modbus/client/sensor.yaml, vars: {addr: 0x066, zone_name: 3, short_mac: BB950A } }  
+  - <<: !include { file: tpl/modbus/client/sensor.yaml, vars: {addr: 0x067, zone_name: 4, short_mac: 73978C } }  
+  - <<: !include { file: tpl/modbus/client/sensor.yaml, vars: {addr: 0x068, zone_name: 5, short_mac: F61941 } }  
+  - <<: !include { file: tpl/modbus/client/sensor.yaml, vars: {addr: 0x069, zone_name: 6, short_mac: B75595 } }  
+
+uart:
+  - id: mod_bus
+    tx_pin: 17
+    rx_pin: 16
+    baud_rate: 115200
+    stop_bits: 1
+    debug:
+      direction: BOTH
+
+modbus:
+  id: modbus1
+
+modbus_controller:
+  - id: valve_controller
+    address: 0x1   ## address of the ModBUS slave device on the bus
+    modbus_id: modbus1
+    setup_priority: -10
+  - id: temp_controller
+    address: 0x1   ## address of the ModBUS slave device on the bus
+    modbus_id: modbus1
+    setup_priority: -20
+    update_interval: 10s
+
+
+switch:
+  - <<: !include { file: tpl/modbus/client/switch.yaml, vars: {addr: 0x0C8, zone_name: 1 } }  
+  - <<: !include { file: tpl/modbus/client/switch.yaml, vars: {addr: 0x0C9, zone_name: 2 } }  
+  - <<: !include { file: tpl/modbus/client/switch.yaml, vars: {addr: 0x0CA, zone_name: 3 } }  
+  - <<: !include { file: tpl/modbus/client/switch.yaml, vars: {addr: 0x0CB, zone_name: 4 } }  
+  - <<: !include { file: tpl/modbus/client/switch.yaml, vars: {addr: 0x0CC, zone_name: 5 } }  
+  - <<: !include { file: tpl/modbus/client/switch.yaml, vars: {addr: 0x0CD, zone_name: 6 } }  
+

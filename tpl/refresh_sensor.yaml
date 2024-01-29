@@ -1,0 +1,11 @@
+#Fake Sensors with custom update interval to control PID recalcaulate interval
+platform: template
+name: "ATC_${short_mac}_temp"
+id: ATC_${short_mac}_temp
+unit_of_measurement: "°C"
+device_class: "temperature"
+state_class: "measurement"
+accuracy_decimals: 2
+lambda: |-
+  return id(ATC_${short_mac}_temperature).state; 
+update_interval: 10s

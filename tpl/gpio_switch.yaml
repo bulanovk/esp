@@ -1,0 +1,7 @@
+- platform: gpio
+  pin:
+    number: ${pin_number}
+    inverted: True
+  id: ${switch_id}
+  name: ${switch_id}
+  restore_mode: RESTORE_DEFAULT_OFF

@@ -1,0 +1,28 @@
+#Custom
+number:
+ - platform: template
+   name: "${pid_id}: PID Max integral"
+   unit_of_measurement: "%"
+   min_value: 0.0
+   max_value: 100.0
+   step: 1.0
+   mode: box
+   set_action:
+     - lambda: id(${pid_id}).set_max_integral(x/100);
+   optimistic: true
+   restore_value: true
+   initial_value: 100
+   id: pid_max_int_${pid_id}
+ - platform: template
+   name: "${pid_id}: PID Min integral"
+   unit_of_measurement: "%"
+   min_value: 0.0
+   max_value: 100.0
+   step: 1.0
+   mode: box
+   set_action:
+     - lambda: id(${pid_id}).set_min_integral(x/100);
+   optimistic: true
+   restore_value: true
+   initial_value: 0.0
+   id: pid_min_int_${pid_id}

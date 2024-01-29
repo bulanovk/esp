@@ -1,0 +1,11 @@
+platform: modbus_controller
+modbus_controller_id: temp_controller
+name: "Zone${zone_name} Temperature"
+id: modbus_ATC_${short_mac}
+register_type: holding
+address: ${addr}
+accuracy_decimals: 2
+unit_of_measurement: "°C"
+value_type: U_WORD
+filters:
+  - multiply: 0.01

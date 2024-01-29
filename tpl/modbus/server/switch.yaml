@@ -1,0 +1,10 @@
+start_address: ${reg_adress} # Map Switch:${switch_id} to register: ${reg_adress}
+number: 1
+on_write: |
+  if(value)  
+  	id(${switch_id})->turn_on();
+  else
+    id(${switch_id})->turn_off();
+  return value;
+on_read: |
+  return id(${switch_id})->state ? 1 : 0;

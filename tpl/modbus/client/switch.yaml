@@ -1,0 +1,7 @@
+platform: modbus_controller
+modbus_controller_id: valve_controller
+id: valve_zone${zone_name}_switch
+name: "Valve Zone ${zone_name}"
+register_type: holding
+address: ${addr}
+bitmask: 1

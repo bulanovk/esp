@@ -7,6 +7,8 @@ esphome:
 packages:
   metric: !include pkg/metric.yaml
   basic: !include pkg/basic.yaml  
+  external_components.bthome: !include pkg/sources/bthome.yaml
+  ble: !include pkg/ble.yaml  
 
 api:
   encryption:
@@ -14,6 +16,8 @@ api:
 
 web_server:
   port: 80
+
+bthome_ble_receiver:    
 
 dallas:
   - pin: 4
@@ -28,3 +32,10 @@ sensor:
     resolution: 12
     accuracy_decimals: 2
     name: "Test Dalas"
+  #A4:C1:38:3D:B4:56
+  - platform: bthome_ble_receiver
+    mac_address: "A4:C1:38:3D:B4:56"
+    sensors:
+      - measurement_type: temperature
+        id: ATC_3DB456_temperature
+        name: ESP_ATC_3DB456    

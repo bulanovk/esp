@@ -1,6 +1,6 @@
 #Compile Block https://github.com/esphome/esphome/pull/4874 #https://github.com/epiclabs-uc/esphome-modbus-server
 esphome:
-  name: esp-ds1820
+  name: esp1820
   friendly_name: ESP DS1820 Test
 
 
@@ -19,6 +19,11 @@ web_server:
 
 bthome_ble_receiver:    
 
+
+wifi:
+  domain: ".iot.cloud-lab.xyz"
+
+
 dallas:
   - pin: 4
     id: main_ds
@@ -32,10 +37,44 @@ sensor:
     resolution: 12
     accuracy_decimals: 2
     name: "Test Dalas"
-  #A4:C1:38:3D:B4:56
+  #A4:C1:38:3D:B4:56 -  спальная
   - platform: bthome_ble_receiver
     mac_address: "A4:C1:38:3D:B4:56"
     sensors:
       - measurement_type: temperature
         id: ATC_3DB456_temperature
         name: ESP_ATC_3DB456    
+  #A4:C1:38:4B:F5:95 - 
+  # - platform: bthome_ble_receiver
+  #   mac_address: "A4:C1:38:4B:F5:95"
+  #   sensors:
+  #     - measurement_type: temperature
+  #       id: ATC_4BF595_temperature
+  #A4:C1:38:BB:95:0A - Детская
+  - platform: bthome_ble_receiver
+    mac_address: "A4:C1:38:BB:95:0A"
+    sensors:
+      - measurement_type: temperature
+        id: ATC_BB950A_temperature
+        name: ESP_ATC_BB950A
+  #A4:C1:38:73:97:8C - Гостевая
+  - platform: bthome_ble_receiver
+    mac_address: "A4:C1:38:73:97:8C"
+    sensors:
+      - measurement_type: temperature
+        id: ATC_73978C_temperature
+        name: ESP_ATC_73978C
+  #A4:C1:38:F6:19:41 - Гостинная
+  - platform: bthome_ble_receiver
+    mac_address: "A4:C1:38:F6:19:41"
+    sensors:
+      - measurement_type: temperature
+        id: ATC_F61941_temperature
+        name: ESP_ATC_F61941
+  #A4:C1:38:F6:19:41 - Ванная
+  - platform: bthome_ble_receiver
+    mac_address: "A4:C1:38:B7:55:95"
+    sensors:
+      - measurement_type: temperature
+        id: ATC_B75595_temperature        
+        name: ESP_ATC_B75595

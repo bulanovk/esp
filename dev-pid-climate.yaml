@@ -91,6 +91,8 @@ uart:
     rx_pin: 16
     baud_rate: 115200
     stop_bits: 1
+    data_bits: 8
+    parity: NONE
     debug:
       direction: BOTH
 
@@ -113,3 +115,26 @@ modbus_server:
       - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 203, switch_id: valve4_switch } }            
       - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 204, switch_id: valve5_switch } }            
       - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 205, switch_id: valve6_switch } }            
+  # - id: ecto_server
+  #   uart_id: intmodbus
+  #   # 0xFF FF FF
+  #   # 
+  #   address: 1 # slave address      
+  #   holding_registers:
+  #     - start_address: 0
+  #       number: 1
+  #       on_read: |-
+  #         return 0xFF
+  #     - start_address: 1
+  #       number: 1
+  #       on_read: |-
+  #         return 0xFFFE
+  #     - start_address: 2 # Resrved
+  #       number: 1
+  #       on_read: |-
+  #         return 0x0
+  #     - start_address: 3
+  #       number: 1
+  #       on_read: |-
+  #         return  0x19 0x59 8
+      

@@ -6,11 +6,9 @@ esphome:
 
 
 packages:
-  external_components.bthome: !include pkg/sources/bthome.yaml
+  external_components.modbus: !include pkg/sources/modbus_server.yaml  
   metric: !include pkg/metric.yaml
   basic: !include pkg/basic.yaml  
-  ble: !include pkg/ble.yaml
-  pid.ecto: !include {file: pkg/pid/climate.yaml, vars: { pid_id: pid_ecto, zone_name: 1, short_mac: 3DB456} }   
 
 wifi:
   domain: ".iot.cloud-lab.xyz"
@@ -19,35 +17,70 @@ api:
   encryption:
     key: "mY2PuxeI7kVcAZIITrg+sOE6UOCP1TYNmWBdlmjxP94="
 
-#web_server:
-#  port: 80
+web_server:
+  port: 80
 
-bthome_ble_receiver:  
+uart:
+  - id: ectobus
+    tx_pin: 17
+    rx_pin: 16
+    baud_rate: 19600
+    stop_bits: 1
+    data_bits: 8
+    parity: NONE
+    debug:
+      direction: BOTH  
 
-binary_sensor:
-  # In case the API connection is lost, the controller will change
-  # to automatic mode.
-  - platform: template
-    id: sensor_api_connected
-    name: Autonomous Mode
-    lambda: return !global_api_server->is_connected();
-    filters:
-      - delayed_off: 60s
+  - id: chintbus
+    tx_pin: 1
+    rx_pin: 3
+    baud_rate: 19600
+    stop_bits: 1
+    data_bits: 8
+    parity: NONE
+    debug:
+      direction: BOTH          
 
+modbus_server:
+  - id: ectosrv
+    uart_id: ectobus
+    address: 1 # slave address
+    re_pin: 4
+    de_pin: 18
+    input_registers:
+      - start_address: 0 # in this example we map register 200 to a switch
+        number: 1
+        on_read: |-
+          return 0x80;    
+      - start_address: 1 # in this example we map register 200 to a switch
+        number: 1
+        on_read: |-
+          return 0x0000;    
+      - start_address: 2 # in this example we map register 200 to a switch
+        number: 1
+        on_read: |-
+          return 0x04;    
+      - start_address: 3 # in this example we map register 200 to a switch
+        number: 1
+        on_read: |-
+          return 0x590A;                                  
+modbus:
+  id: modbus1
+  uart_id: chintbus
+  flow_control_pin: 22
+
+
+modbus_controller:
+  - id: temp_controller
+    address: 0x1   ## address of the ModBUS slave device on the bus
+    modbus_id: modbus1
+    setup_priority: -10   
 sensor:
-  #A4:C1:38:3D:B4:56
-  - platform: bthome_ble_receiver
-    mac_address: "A4:C1:38:3D:B4:56"
-    sensors:
-      - measurement_type: temperature
-        id: modbus_ATC_3DB456
-        name: main-sens
-
-switch:
-  - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 23, switch_id: valve_zone1_switch } }            
-  # - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 22, switch_id: valve2_switch } }            
-  # - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 21, switch_id: valve3_switch } }              
-  # - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 19, switch_id: valve4_switch } }              
-  # - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 18, switch_id: valve5_switch } }              
-  # - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 4, switch_id: valve6_switch } }              
-  # - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 13, switch_id: boiler_switch } }               
+  - platform: modbus_controller
+    modbus_controller_id: temp_controller
+    name: "Zone Temperature1"
+    id: test1
+    register_type: read
+    address: 3
+    unit_of_measurement: "°C"
+    value_type: U_WORD

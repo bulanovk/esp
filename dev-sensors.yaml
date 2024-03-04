@@ -35,6 +35,8 @@ modbus_server:
   - id: modbuserver
     uart_id: intmodbus
     address: 1 # slave address
+    re_pin: 4
+    de_pin: 4
     holding_registers:
       - start_address: 100 # in this example we map register 200 to a switch
         number: 1

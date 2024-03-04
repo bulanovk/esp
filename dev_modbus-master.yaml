@@ -50,6 +50,8 @@ uart:
 
 modbus:
   id: modbus1
+  uart_id: mod_bus
+  fflow_control_pin: 4
 
 modbus_controller:
   - id: valve_controller

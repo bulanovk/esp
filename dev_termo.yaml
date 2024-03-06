@@ -24,7 +24,7 @@ uart:
   - id: ectobus
     tx_pin: 17
     rx_pin: 16
-    baud_rate: 19600
+    baud_rate: 9600
     stop_bits: 1
     data_bits: 8
     parity: NONE
@@ -34,10 +34,9 @@ uart:
   - id: chintbus
     tx_pin: 1
     rx_pin: 3
-    baud_rate: 19600
+    baud_rate: 9600
     stop_bits: 1
     data_bits: 8
-    parity: NONE
     debug:
       direction: BOTH          
 
@@ -65,22 +64,99 @@ modbus_server:
         on_read: |-
           return 0x590A;                                  
 modbus:
-  id: modbus1
+  id: chitmodbus
+  send_wait_time: 2000ms  
   uart_id: chintbus
   flow_control_pin: 22
 
 
-modbus_controller:
-  - id: temp_controller
-    address: 0x1   ## address of the ModBUS slave device on the bus
-    modbus_id: modbus1
+chint_controller:
+  - id: chint_controller
+    address: 0x3   ## address of the ModBUS slave device on the bus
+    modbus_id: chitmodbus
+    update_interval: 1s
+    setup_priority: -10
+    command_throttle: 20ms    
     setup_priority: -10   
 sensor:
-  - platform: modbus_controller
-    modbus_controller_id: temp_controller
-    name: "Zone Temperature1"
-    id: test1
-    register_type: read
-    address: 3
-    unit_of_measurement: "°C"
-    value_type: U_WORD
+ - platform: chint_controller
+   id: chint_voltage
+   name: "Chint Tensione"
+   address: 0x2000
+   unit_of_measurement: "V" ## for any other unit the value is returned in minutes
+   register_type: holding
+   value_type: FP32
+   accuracy_decimals: 2
+   filters:
+     - multiply: 1
+
+ - platform: chint_controller
+   id: chint_current
+   name: "Chint Corrente"
+   address: 0x2002
+   unit_of_measurement: "A" ## for any other unit the value is returned in minutes
+   register_type: read
+   value_type: FP32
+   accuracy_decimals: 2
+   filters:
+     - multiply: 1
+
+ - platform: chint_controller
+   id: chint_power
+   name: "Chint Potenza istantanea"
+   address: 0x2004
+   unit_of_measurement: "W" ## for any other unit the value is returned in minutes
+   state_class: "measurement"
+   register_type: read
+   value_type: FP32
+   accuracy_decimals: 2
+   filters:
+     - multiply: 1000
+
+ - platform: chint_controller
+   id: chint_frequency
+   name: "Chint Frequenza Rete"
+   address: 0x200E
+   unit_of_measurement: "Hz" ## for any other unit the value is returned in minutes
+   register_type: read
+   value_type: FP32
+   accuracy_decimals: 2
+   filters:
+     - multiply: 1
+
+ - platform: chint_controller
+   id: chint_energy_sold
+   name: "Chint Energia ceduta"
+   address: 0x4000
+   unit_of_measurement: "KWh" ## for any other unit the value is returned in minutes
+   state_class: total_increasing
+   device_class: "energy"
+   register_type: read
+   value_type: FP32
+   accuracy_decimals: 2
+   filters:
+     - multiply: 1
+ 
+ - platform: chint_controller
+   id: chint_energy_purchased
+   name: "Chint Energia acquistata"
+   address: 0x400A
+   unit_of_measurement: "KWh" ## for any other unit the value is returned in minutes
+   state_class: total_increasing
+   device_class: "energy"
+   register_type: read
+   value_type: FP32
+   accuracy_decimals: 2
+   filters:
+     - multiply: 1   
+
+ - platform: chint_controller
+   id: chint_reactive_power
+   name: "Chint Potenza reattiva"
+   address: 0x2004
+   unit_of_measurement: "Var" ## for any other unit the value is returned in minutes
+   register_type: read
+   value_type: FP32
+   accuracy_decimals: 2
+   filters:
+     - multiply: 1000

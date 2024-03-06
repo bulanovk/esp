@@ -24,7 +24,7 @@ uart:
   - id: ectobus
     tx_pin: 17
     rx_pin: 16
-    baud_rate: 9600
+    baud_rate: 19200
     stop_bits: 1
     data_bits: 8
     parity: NONE
@@ -34,7 +34,7 @@ uart:
   - id: chintbus
     tx_pin: 1
     rx_pin: 3
-    baud_rate: 9600
+    baud_rate: 19200
     stop_bits: 1
     data_bits: 8
     debug:

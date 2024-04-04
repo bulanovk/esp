@@ -78,3 +78,10 @@ sensor:
       - measurement_type: temperature
         id: ATC_B75595_temperature        
         name: ESP_ATC_B75595
+  #A4:C1:38:68:3A:F1 - Прихожая
+  - platform: bthome_ble_receiver
+    mac_address: "A4:C1:38:68:3A:F1"
+    sensors:
+      - measurement_type: temperature
+        id: ATC_683AF1_temperature        
+        name: ESP_ATC_683AF1

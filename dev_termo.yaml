@@ -31,21 +31,21 @@ uart:
     debug:
       direction: BOTH  
 
-  - id: chintbus
-    tx_pin: 1
-    rx_pin: 3
-    baud_rate: 19200
-    stop_bits: 1
-    data_bits: 8
-    debug:
-      direction: BOTH          
+  # - id: chintbus
+  #   tx_pin: 1
+  #   rx_pin: 3
+  #   baud_rate: 19200
+  #   stop_bits: 1
+  #   data_bits: 8
+  #   debug:
+  #     direction: BOTH          
 
 modbus_server:
   - id: ectosrv
     uart_id: ectobus
     address: 4 # slave address
-    re_pin: 4
-    de_pin: 18
+    # re_pin: 4
+    # de_pin: 18
     holding_registers:
       - start_address: 0 # in this example we map register 200 to a switch
         number: 1
@@ -54,7 +54,7 @@ modbus_server:
       - start_address: 1 # in this example we map register 200 to a switch
         number: 1
         on_read: |-
-          return 0;    
+          return 1;    
       - start_address: 2 # in this example we map register 200 to a switch
         number: 1
         on_read: |-
@@ -62,7 +62,7 @@ modbus_server:
       - start_address: 3 # in this example we map register 200 to a switch
         number: 1
         on_read: |-
-          return 0x2201;     
+          return 0x5908;     
     input_registers:
       - start_address: 10 # in this example we map register 200 to a switch
         number: 1
@@ -72,20 +72,20 @@ modbus_server:
         number: 1
         on_read: |-
           return 0;                                               
-modbus:
-  id: chitmodbus
-  send_wait_time: 2000ms  
-  uart_id: chintbus
-  flow_control_pin: 22
+# modbus:
+#   id: chitmodbus
+#   send_wait_time: 2000ms  
+#   uart_id: chintbus
+#   flow_control_pin: 22
 
 
-modbus_controller:
-  - id: chint_controller
-    address: 0x3   ## address of the ModBUS slave device on the bus
-    modbus_id: chitmodbus
-    update_interval: 1s
-    setup_priority: -10
-    command_throttle: 20ms
+# modbus_controller:
+#   - id: chint_controller
+#     address: 0x3   ## address of the ModBUS slave device on the bus
+#     modbus_id: chitmodbus
+#     update_interval: 1s
+#     setup_priority: -10
+#     command_throttle: 20ms
 
 # sensor:
 #  - platform: modbus_controller

@@ -1,0 +1,3 @@
+measurement_type: ${type}
+id: ATCH_${short_mac}_${type}
+name: ESP_ATC_${short_mac}_${type}

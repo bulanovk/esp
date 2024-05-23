@@ -44,6 +44,7 @@ sensor:
       - measurement_type: temperature
         id: ATC_3DB456_temperature
         name: ESP_ATC_3DB456    
+      - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: 3DB456    , type: humidity } }               
   #A4:C1:38:4B:F5:95 - 
   # - platform: bthome_ble_receiver
   #   mac_address: "A4:C1:38:4B:F5:95"
@@ -57,6 +58,7 @@ sensor:
       - measurement_type: temperature
         id: ATC_BB950A_temperature
         name: ESP_ATC_BB950A
+      - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: BB950A, type: humidity } }       
   #A4:C1:38:73:97:8C - Гостевая
   - platform: bthome_ble_receiver
     mac_address: "A4:C1:38:73:97:8C"
@@ -64,6 +66,7 @@ sensor:
       - measurement_type: temperature
         id: ATC_73978C_temperature
         name: ESP_ATC_73978C
+      - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: 73978C, type: humidity } }               
   #A4:C1:38:F6:19:41 - Гостинная
   - platform: bthome_ble_receiver
     mac_address: "A4:C1:38:F6:19:41"
@@ -71,6 +74,7 @@ sensor:
       - measurement_type: temperature
         id: ATC_F61941_temperature
         name: ESP_ATC_F61941
+      - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: F61941, type: humidity } }       
   #A4:C1:38:F6:19:41 - Ванная
   - platform: bthome_ble_receiver
     mac_address: "A4:C1:38:B7:55:95"
@@ -78,6 +82,7 @@ sensor:
       - measurement_type: temperature
         id: ATC_B75595_temperature        
         name: ESP_ATC_B75595
+      - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: B75595, type: humidity } }               
   #A4:C1:38:68:3A:F1 - Прихожая
   - platform: bthome_ble_receiver
     mac_address: "A4:C1:38:68:3A:F1"
@@ -85,3 +90,4 @@ sensor:
       - measurement_type: temperature
         id: ATC_683AF1_temperature        
         name: ESP_ATC_683AF1
+      - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: 683AF1, type: humidity } }       

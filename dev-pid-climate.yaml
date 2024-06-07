@@ -1,5 +1,5 @@
 #Compile Block https://github.com/esphome/esphome/pull/4874 #https://github.com/epiclabs-uc/esphome-modbus-server
-esphome:
+esphome:    
   name: pid-climate
   friendly_name: pid-climate
 
@@ -12,7 +12,7 @@ packages:
   ble: !include pkg/ble.yaml
 
 wifi:
-  use_address: 192.168.1.93
+  use_address: 192.168.3.93
 
 api:
   encryption:
@@ -102,12 +102,33 @@ uart:
 modbus_server:
   - id: modbuserver
     uart_id: intmodbus
-    address: 1 # slave address
-    re_pin: 23
-    de_pin: 22   
+    address: 4 # slave address
+    # re_pin: 23
+    # de_pin: 22   
+    input_registers:
+      - start_address: 10
+        number: 1
+        on_read: |-
+          return 0xF000;
     holding_registers:
+      - start_address: 0
+        number: 1
+        on_read: |-
+          return 0x00FF;
+      - start_address: 1
+        number: 1
+        on_read: |-
+          return 0xFFFE;
+      - start_address: 2 # Resrved
+        number: 1
+        on_read: |-
+          return 0x0004;
+      - start_address: 3
+        number: 1
+        on_read: |-
+          return  0x5908;
       #Sensors
-      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 100, sensor_id: ATC_3DB456_temperature } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 100, sensor_id: ATC_3DB456_temperature } }      
       # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 101, sensor_id: ATC_4BF595_temperature } }
       # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 102, sensor_id: ATC_BB950A_temperature } }            
       # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 103, sensor_id: ATC_73978C_temperature } }      
@@ -119,29 +140,4 @@ modbus_server:
       # - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 202, switch_id: valve3_switch } }            
       # - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 203, switch_id: valve4_switch } }            
       # - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 204, switch_id: valve5_switch } }            
-      # - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 205, switch_id: valve6_switch } }         
-      
-         
-  # - id: ecto_server
-  #   uart_id: intmodbus
-  #   # 0xFF FF FF
-  #   # 
-  #   address: 1 # slave address      
-  #   holding_registers:
-  #     - start_address: 0
-  #       number: 1
-  #       on_read: |-
-  #         return 0xFF
-  #     - start_address: 1
-  #       number: 1
-  #       on_read: |-
-  #         return 0xFFFE
-  #     - start_address: 2 # Resrved
-  #       number: 1
-  #       on_read: |-
-  #         return 0x0
-  #     - start_address: 3
-  #       number: 1
-  #       on_read: |-
-  #         return  0x19 0x59 8
-      
+      # - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 205, switch_id: valve6_switch } }        

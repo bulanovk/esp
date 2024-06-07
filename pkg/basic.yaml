@@ -6,7 +6,7 @@ esp32:
     type: arduino
 # Enable logging
 logger:
-  level: debug
+  level: info
 # Enable Home Assistant API
 ota:
 wifi:

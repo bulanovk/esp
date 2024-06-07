@@ -45,12 +45,12 @@ sensor:
         id: ATC_3DB456_temperature
         name: ESP_ATC_3DB456    
       - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: 3DB456    , type: humidity } }               
-  #A4:C1:38:4B:F5:95 - 
-  # - platform: bthome_ble_receiver
-  #   mac_address: "A4:C1:38:4B:F5:95"
-  #   sensors:
-  #     - measurement_type: temperature
-  #       id: ATC_4BF595_temperature
+  #A4:C1:38:4B:F5:95 - Гостинная 2
+  - platform: bthome_ble_receiver
+    mac_address: "A4:C1:38:4B:F5:95"
+    sensors:
+      - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: 4BF595, type: temperature } }                      
+      - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: 4BF595, type: humidity } }              
   #A4:C1:38:BB:95:0A - Детская
   - platform: bthome_ble_receiver
     mac_address: "A4:C1:38:BB:95:0A"

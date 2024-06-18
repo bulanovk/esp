@@ -51,6 +51,12 @@ sensor:
     sensors:
       - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: 4BF595, type: temperature } }                      
       - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: 4BF595, type: humidity } }              
+  #A4:C1:38:F5:F6:59 -  Времянка
+  - platform: bthome_ble_receiver
+    mac_address: "A4:C1:38:F5:F6:59"
+    sensors:
+      - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: F5F659, type: temperature } }                      
+      - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: F5F659, type: humidity } }         
   #A4:C1:38:BB:95:0A - Детская
   - platform: bthome_ble_receiver
     mac_address: "A4:C1:38:BB:95:0A"
@@ -75,7 +81,7 @@ sensor:
         id: ATC_F61941_temperature
         name: ESP_ATC_F61941
       - <<: !include { file: tpl/ble_sensor_part.yaml, vars: {short_mac: F61941, type: humidity } }       
-  #A4:C1:38:F6:19:41 - Ванная
+  #A4:C1:38:B7:55:95 - Ванная
   - platform: bthome_ble_receiver
     mac_address: "A4:C1:38:B7:55:95"
     sensors:

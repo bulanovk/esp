@@ -1,0 +1,302 @@
+#Compile Block https://github.com/esphome/esphome/pull/4874 #https://github.com/epiclabs-uc/esphome-modbus-server
+esphome:    
+  name: esp32-modbus-gate
+  friendly_name: esp32-modbus-gate
+
+
+packages:
+  # external_components.bthome: !include pkg/sources/bthome.yaml
+  # external_components.modbus: !include pkg/sources/modbus_server.yaml
+  metric: !include pkg/metric.yaml
+  basic: !include pkg/basic.yaml  
+  # ble: !include pkg/ble.yaml
+
+wifi:
+  use_address: 192.168.3.93
+
+api:
+  encryption:
+    key: "mY2PuxeI7kVcAZIITrg+sOE6UOCP1TYNmWBdlmjxP94="
+
+web_server:
+  port: 80
+
+# bthome_ble_receiver:
+
+
+# #Sensors
+# sensor:
+#   #A4:C1:38:3D:B4:56
+#   - platform: bthome_ble_receiver
+#     mac_address: "A4:C1:38:3D:B4:56"
+#     sensors:
+#       - measurement_type: temperature
+#         id: ATC_3DB456_temperature
+#   #A4:C1:38:4B:F5:95
+#   - platform: bthome_ble_receiver
+#     mac_address: "A4:C1:38:4B:F5:95"
+#     sensors:
+#       - measurement_type: temperature
+#         id: ATC_4BF595_temperature
+#   #A4:C1:38:BB:95:0A
+#   - platform: bthome_ble_receiver
+#     mac_address: "A4:C1:38:BB:95:0A"
+#     sensors:
+#       - measurement_type: temperature
+#         id: ATC_BB950A_temperature
+#   #A4:C1:38:73:97:8C
+#   - platform: bthome_ble_receiver
+#     mac_address: "A4:C1:38:73:97:8C"
+#     sensors:
+#       - measurement_type: temperature
+#         id: ATC_73978C_temperature
+#   #A4:C1:38:F6:19:41
+#   - platform: bthome_ble_receiver
+#     mac_address: "A4:C1:38:F6:19:41"
+#     sensors:
+#       - measurement_type: temperature
+#         id: ATC_F61941_temperature
+#   #A4:C1:38:F6:19:41
+#   - platform: bthome_ble_receiver
+#     mac_address: "A4:C1:38:B7:55:95"
+#     sensors:
+#       - measurement_type: temperature
+#         id: ATC_B75595_temperature
+
+# binary_sensor:
+#   # In case the API connection is lost, the controller will change
+#   # to automatic mode.
+#   - <<: !include { file: tpl/valve_sensor.yaml, vars: { zone_name: 1 } }
+#   - <<: !include { file: tpl/valve_sensor.yaml, vars: { zone_name: 2 } }
+#   - <<: !include { file: tpl/valve_sensor.yaml, vars: { zone_name: 3 } }
+#   - <<: !include { file: tpl/valve_sensor.yaml, vars: { zone_name: 4 } }
+#   - <<: !include { file: tpl/valve_sensor.yaml, vars: { zone_name: 5 } }
+#   - <<: !include { file: tpl/valve_sensor.yaml, vars: { zone_name: 6 } }
+#   - platform: template
+#     id: bolier_state
+#     name: "Boiler State"
+#     lambda: |-
+#       return id(boiler_switch).state;           
+
+
+# switch:
+#   - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 26, switch_id: valve1_switch } }            
+#   - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 25, switch_id: valve2_switch } }            
+#   - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 21, switch_id: valve3_switch } }              
+#   - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 19, switch_id: valve4_switch } }              
+#   - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 18, switch_id: valve5_switch } }              
+#   - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 4, switch_id: valve6_switch } }              
+#   - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 13, switch_id: boiler_switch } }                
+
+uart:
+  - id: intmodbus
+    tx_pin: 17
+    rx_pin: 16
+    baud_rate: 9600
+    stop_bits: 1
+    data_bits: 8
+    parity: NONE
+    debug:
+      direction: BOTH
+modbus:
+  id: chitmodbus
+  send_wait_time: 2000ms  
+  uart_id: intmodbus
+  flow_control_pin: 22
+
+
+modbus_controller:
+  - id: chint_controller
+    address: 0x3   ## address of the ModBUS slave device on the bus
+    modbus_id: chitmodbus
+    update_interval: 1s
+    setup_priority: -10
+    # command_throttle: 20ms
+
+sensor:
+# power
+ - platform: modbus_controller
+   modbus_controller_id: chint_controller
+   id: dtsu666_power_a
+   name: "Phase A Power"
+   address: 0x2014
+   unit_of_measurement: "W"
+   register_type: holding
+   value_type: FP32
+   filters:
+    - multiply: 0.1   
+   accuracy_decimals: 0
+ - platform: modbus_controller
+   modbus_controller_id: chint_controller
+   id: dtsu666_power_b
+   name: "Phase B Power"
+   address: 0x2016
+   unit_of_measurement: "W"
+   register_type: holding
+   value_type: FP32
+   filters:
+    - multiply: 0.1   
+   accuracy_decimals: 0
+ - platform: modbus_controller
+   modbus_controller_id: chint_controller
+   id: dtsu666_power_c
+   name: "Phase C Power"
+   address: 0x2018
+   unit_of_measurement: "W"
+   register_type: holding
+   value_type: FP32
+   filters:
+    - multiply: 0.1   
+   accuracy_decimals: 0   
+ - platform: modbus_controller
+   modbus_controller_id: chint_controller
+   id: dtsu666_power_total
+   name: "Phase Toltal Power"
+   address: 0x2012
+   unit_of_measurement: "W"
+   register_type: holding
+   value_type: FP32
+   filters:
+    - multiply: 0.1   
+   accuracy_decimals: 0
+#Voltage
+ - platform: modbus_controller
+   modbus_controller_id: chint_controller
+   id: dtsu666_voltage_a
+   name: "Phase A Voltage"
+   address: 0x2006
+   unit_of_measurement: "V"
+   register_type: holding
+   value_type: FP32
+   filters:
+    - multiply: 0.1   
+   accuracy_decimals: 1
+ - platform: modbus_controller
+   modbus_controller_id: chint_controller
+   id: dtsu666_voltage_b
+   name: "Phase B Voltage"
+   address: 0x2008
+   unit_of_measurement: "V"
+   register_type: holding
+   value_type: FP32
+   filters:
+    - multiply: 0.1   
+   accuracy_decimals: 1
+ - platform: modbus_controller
+   modbus_controller_id: chint_controller
+   id: dtsu666_voltage_c
+   name: "Phase C Voltage"
+   address: 0x200A
+   unit_of_measurement: "V"
+   register_type: holding
+   value_type: FP32
+   filters:
+    - multiply: 0.1   
+   accuracy_decimals: 1   
+#Current
+ - platform: modbus_controller
+   modbus_controller_id: chint_controller
+   id: dtsu666_current_a
+   name: "Phase A Current"
+   address: 0x200C
+   unit_of_measurement: "A"
+   register_type: holding
+   value_type: FP32
+   filters:
+    - multiply: 0.001   
+   accuracy_decimals: 2
+ - platform: modbus_controller
+   modbus_controller_id: chint_controller
+   id: dtsu666_current_b
+   name: "Phase B Current"
+   address: 0x200E
+   unit_of_measurement: "A"
+   register_type: holding
+   value_type: FP32
+   filters:
+    - multiply: 0.001   
+   accuracy_decimals: 2
+ - platform: modbus_controller
+   modbus_controller_id: chint_controller
+   id: dtsu666_current_c
+   name: "Phase C Current"
+   address: 0x2010
+   unit_of_measurement: "A"
+   register_type: holding
+   value_type: FP32
+   filters:
+    - multiply: 0.001   
+   accuracy_decimals: 2   
+
+#  - platform: modbus_controller
+#    id: chint_active_power_phase_a
+#    modbus_controller_id: chint_controller   
+#    name: "chint active power phase 1"
+#    address: 0x0164
+#    unit_of_measurement: "W"
+#    register_type: holding
+#    value_type: S_DWORD
+#    accuracy_decimals: 0
+
+#  - platform: modbus_controller
+#    id: chint_active_power_phase_b
+#    modbus_controller_id: chint_controller   
+#    name: "chint active power phase 2"
+#    address: 0x0166
+#    unit_of_measurement: "W"
+#    register_type: holding
+#    value_type: U_WORD
+#   #  accuracy_decimals: 0
+
+#  - platform: modbus_controller
+#    id: chint_active_power_phase_c
+#    modbus_controller_id: chint_controller   
+#    name: "chint active power phase 3"
+#    address: 0x0168
+#    unit_of_measurement: "W"
+#    register_type: holding
+#    value_type: U_WORD
+#   #  accuracy_decimals: 0   
+
+# modbus_server:
+#   - id: modbuserver
+#     uart_id: intmodbus
+#     address: 4 # slave address
+#     # re_pin: 23
+#     # de_pin: 22   
+#     input_registers:
+#       - start_address: 10
+#         number: 1
+#         on_read: |-
+#           return 0xF000;
+#     holding_registers:
+#       - start_address: 0
+#         number: 1
+#         on_read: |-
+#           return 0x00FF;
+#       - start_address: 1
+#         number: 1
+#         on_read: |-
+#           return 0xFFFE;
+#       - start_address: 2 # Resrved
+#         number: 1
+#         on_read: |-
+#           return 0x0004;
+#       - start_address: 3
+#         number: 1
+#         on_read: |-
+#           return  0x5908;
+#       #Sensors
+#       - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 100, sensor_id: ATC_3DB456_temperature } }      
+#       # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 101, sensor_id: ATC_4BF595_temperature } }
+#       # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 102, sensor_id: ATC_BB950A_temperature } }            
+#       # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 103, sensor_id: ATC_73978C_temperature } }      
+#       # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 104, sensor_id: ATC_F61941_temperature } }        
+#       # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 105, sensor_id: ATC_B75595_temperature } }        
+#       #Switches
+#       # - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 200, switch_id: valve1_switch } }            
+#       # - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 201, switch_id: valve2_switch } }            
+#       # - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 202, switch_id: valve3_switch } }            
+#       # - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 203, switch_id: valve4_switch } }            
+#       # - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 204, switch_id: valve5_switch } }            
+#       # - <<: !include { file: tpl/modbus/server/switch.yaml, vars: { reg_adress: 205, switch_id: valve6_switch } }        

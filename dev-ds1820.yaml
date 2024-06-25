@@ -14,8 +14,8 @@ api:
   encryption:
     key: "mY2PuxeI7kVcAZIITrg+sOE6UOCP1TYNmWBdlmjxP94="
 
-web_server:
-  port: 80
+#web_server:
+  #port: 80
 
 bthome_ble_receiver:    
 
@@ -23,16 +23,16 @@ bthome_ble_receiver:
 wifi:
   domain: ".iot.cloud-lab.xyz"
 
-
-dallas:
-  - pin: 4
+one_wire:
+  - platform: gpio
+    pin: 4
+    # update_interval: 10s
     id: main_ds
-    update_interval: 10s
 
 # Individual sensors
 sensor:
-  - platform: dallas
-    dallas_id: main_ds
+  - platform: dallas_temp
+    one_wire_id: main_ds
     address: 0x7508cf7d1f64ff28
     resolution: 12
     accuracy_decimals: 2

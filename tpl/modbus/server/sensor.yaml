@@ -1,4 +1,4 @@
-start_address: ${reg_adress} # in this example we map register 200 to a switch
-number: 1
-on_read: |-
-  return id(${sensor_id})->state*100;
+address: ${reg_adress} # in this example we map register 200 to a switch
+value_type: U_DWORD
+read_lambda: |-
+  return 1000;//id(${sensor_id})->state;

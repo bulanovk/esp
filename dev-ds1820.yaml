@@ -19,6 +19,9 @@ api:
 
 bthome_ble_receiver:    
 
+ota:
+  - platform: esphome
+    password: "a914a4bee0fa642a04e1d9cc9c5d3c9b"
 
 wifi:
   domain: ".iot.cloud-lab.xyz"

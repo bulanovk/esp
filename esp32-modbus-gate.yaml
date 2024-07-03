@@ -18,8 +18,8 @@ api:
   encryption:
     key: "mY2PuxeI7kVcAZIITrg+sOE6UOCP1TYNmWBdlmjxP94="
 
-web_server:
-  port: 80
+# web_server:
+  # port: 80
 
 # bthome_ble_receiver:
 
@@ -89,34 +89,101 @@ web_server:
 #   - <<: !include { file: tpl/gpio_switch.yaml, vars: { pin_number: 13, switch_id: boiler_switch } }                
 
 uart:
-  - id: intmodbus
+  - id: intPort
     tx_pin: 17
     rx_pin: 16
     baud_rate: 9600
     stop_bits: 1
     data_bits: 8
     parity: NONE
+    # debug:
+      # direction: BOTH
+  - id: ectoPort
+    tx_pin: 27
+    rx_pin: 26
+    baud_rate: 19200
+    stop_bits: 1
+    data_bits: 8
+    parity: NONE
     debug:
-      direction: BOTH
+      direction: BOTH      
 modbus:
-  id: chitmodbus
-  send_wait_time: 2000ms  
-  uart_id: intmodbus
-  flow_control_pin: 22
-
+  - id: intBus
+    send_wait_time: 2000ms  
+    uart_id: intPort
+    flow_control_pin: 22
+  - id: ectoBus
+    send_wait_time: 10ms  
+    uart_id: ectoPort
+    flow_control_pin: 23
+    role: server
 
 modbus_controller:
-  - id: chint_controller
+  - id: intController
     address: 0x3   ## address of the ModBUS slave device on the bus
-    modbus_id: chitmodbus
-    update_interval: 1s
+    modbus_id: intBus
+    update_interval: 10s
     setup_priority: -10
+    # role: client
     # command_throttle: 20ms
+  - id: ectoController
+    command_throttle: 10ms
+    modbus_id: ectoBus
+    # role: server
+    address: 0x3
+    server_registers:
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2002, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2004, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2006, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2008, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x200A, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x200C, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x200E, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2010, sensor_id: dtsu666_power_a } }
+      - address: 0x2012
+        value_type: U_DWORD 
+        read_lambda: |-
+          return 1000;
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2014, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2016, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2018, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x201A, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x201C, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x201E, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2020, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2022, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2024, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2026, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2028, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x202A, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x202C, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x202E, sensor_id: dtsu666_power_a } }
+      - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2030, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }
+      # - <<: !include { file: tpl/modbus/server/sensor.yaml, vars: { reg_adress: 0x2000, sensor_id: dtsu666_power_a } }                  
 
 sensor:
 # power
  - platform: modbus_controller
-   modbus_controller_id: chint_controller
+   modbus_controller_id: intController
    id: dtsu666_power_a
    name: "Phase A Power"
    address: 0x2014
@@ -127,7 +194,7 @@ sensor:
     - multiply: 0.1   
    accuracy_decimals: 0
  - platform: modbus_controller
-   modbus_controller_id: chint_controller
+   modbus_controller_id: intController
    id: dtsu666_power_b
    name: "Phase B Power"
    address: 0x2016
@@ -138,7 +205,7 @@ sensor:
     - multiply: 0.1   
    accuracy_decimals: 0
  - platform: modbus_controller
-   modbus_controller_id: chint_controller
+   modbus_controller_id: intController
    id: dtsu666_power_c
    name: "Phase C Power"
    address: 0x2018
@@ -149,7 +216,7 @@ sensor:
     - multiply: 0.1   
    accuracy_decimals: 0   
  - platform: modbus_controller
-   modbus_controller_id: chint_controller
+   modbus_controller_id: intController
    id: dtsu666_power_total
    name: "Phase Toltal Power"
    address: 0x2012
@@ -161,7 +228,7 @@ sensor:
    accuracy_decimals: 0
 #Voltage
  - platform: modbus_controller
-   modbus_controller_id: chint_controller
+   modbus_controller_id: intController
    id: dtsu666_voltage_a
    name: "Phase A Voltage"
    address: 0x2006
@@ -172,7 +239,7 @@ sensor:
     - multiply: 0.1   
    accuracy_decimals: 1
  - platform: modbus_controller
-   modbus_controller_id: chint_controller
+   modbus_controller_id: intController
    id: dtsu666_voltage_b
    name: "Phase B Voltage"
    address: 0x2008
@@ -183,7 +250,7 @@ sensor:
     - multiply: 0.1   
    accuracy_decimals: 1
  - platform: modbus_controller
-   modbus_controller_id: chint_controller
+   modbus_controller_id: intController
    id: dtsu666_voltage_c
    name: "Phase C Voltage"
    address: 0x200A
@@ -195,7 +262,7 @@ sensor:
    accuracy_decimals: 1   
 #Current
  - platform: modbus_controller
-   modbus_controller_id: chint_controller
+   modbus_controller_id: intController
    id: dtsu666_current_a
    name: "Phase A Current"
    address: 0x200C
@@ -206,7 +273,7 @@ sensor:
     - multiply: 0.001   
    accuracy_decimals: 2
  - platform: modbus_controller
-   modbus_controller_id: chint_controller
+   modbus_controller_id: intController
    id: dtsu666_current_b
    name: "Phase B Current"
    address: 0x200E
@@ -217,7 +284,7 @@ sensor:
     - multiply: 0.001   
    accuracy_decimals: 2
  - platform: modbus_controller
-   modbus_controller_id: chint_controller
+   modbus_controller_id: intController
    id: dtsu666_current_c
    name: "Phase C Current"
    address: 0x2010
@@ -230,7 +297,7 @@ sensor:
 
 #  - platform: modbus_controller
 #    id: chint_active_power_phase_a
-#    modbus_controller_id: chint_controller   
+#    modbus_controller_id: intController   
 #    name: "chint active power phase 1"
 #    address: 0x0164
 #    unit_of_measurement: "W"
@@ -240,7 +307,7 @@ sensor:
 
 #  - platform: modbus_controller
 #    id: chint_active_power_phase_b
-#    modbus_controller_id: chint_controller   
+#    modbus_controller_id: intController   
 #    name: "chint active power phase 2"
 #    address: 0x0166
 #    unit_of_measurement: "W"
@@ -250,7 +317,7 @@ sensor:
 
 #  - platform: modbus_controller
 #    id: chint_active_power_phase_c
-#    modbus_controller_id: chint_controller   
+#    modbus_controller_id: intController   
 #    name: "chint active power phase 3"
 #    address: 0x0168
 #    unit_of_measurement: "W"
@@ -260,7 +327,7 @@ sensor:
 
 # modbus_server:
 #   - id: modbuserver
-#     uart_id: intmodbus
+#     uart_id: intPort
 #     address: 4 # slave address
 #     # re_pin: 23
 #     # de_pin: 22   
